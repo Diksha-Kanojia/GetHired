@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 // Supabase configuration from environment variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
+const SITE_URL = import.meta.env.VITE_SITE_URL;
 // Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -143,9 +143,9 @@ export default function AuthPage() {
     
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider,
+        provider,
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${SITE_URL}/dashboard`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
