@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Smooth scroll padding to account for fixed headers if any */
+html {
+  scroll-padding-top: 2rem;
+}

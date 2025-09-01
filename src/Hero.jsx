@@ -1,30 +1,17 @@
 const HeroSection = () => {
   return (
     <div className="min-h-screen relative flex flex-col">
-      {/* Navbar */}
-      <div className="relative z-30 p-6">
-        <nav className="max-w-6xl mx-auto border border-gray-700 rounded-full px-8 py-4 bg-gray-800/50 backdrop-blur-sm">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <span className="text-white text-lg font-medium">GetHired</span>
-            </div>
-            
-            {/* Navigation Links */}
-            <div className="flex items-center space-x-8">
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                Home
-              </a>
-              <a href="#" className="text-white hover:text-gray-300 transition-colors">
-                About
-              </a>
-            </div>
-          </div>
-        </nav>
+      {/* Header with Logo */}
+      <div className="absolute top-0 left-0 w-full z-30 p-4 md:p-6 lg:p-8">
+        <div className="flex justify-start">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white lg:-ml-4 xl:-ml-6">
+            Get <span className="text-indigo-400">Hired</span>
+          </h1>
+        </div>
       </div>
 
       {/* Hero Content */}
-      <div className="flex-1 flex flex-col items-center justify-center text-center text-white relative z-20 px-6">
+      <div className="flex-1 flex flex-col items-center justify-center text-center text-white relative z-20 px-6 pt-16 md:pt-20 lg:pt-24">
         {/* Heading */}
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
           Practice<br />

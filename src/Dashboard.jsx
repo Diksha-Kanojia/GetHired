@@ -21,7 +21,7 @@ export default function Dashboard() {
           setUser(null);
           setPreviousInterviews([]);
           setLoading(false);
-          navigate('/auth');
+          navigate('/'); // Redirect to home page instead of auth
         }
       }
     );
@@ -29,48 +29,21 @@ export default function Dashboard() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Load previous interviews from Supabase or use sample data
+  // Load previous interviews from localStorage (real data only)
   const loadPreviousInterviews = async (userId) => {
     try {
-      const sampleInterviews = generateSampleInterviews(user);
-      setPreviousInterviews(sampleInterviews);
+      // Get real interview results from localStorage
+      const realInterviews = JSON.parse(localStorage.getItem('interview_results') || '[]');
+      console.log('Loaded real interviews:', realInterviews);
+      
+      // Sort by date (newest first)
+      realInterviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      setPreviousInterviews(realInterviews);
     } catch (error) {
       console.error('Error loading interviews:', error);
-      setPreviousInterviews(generateSampleInterviews(user));
+      setPreviousInterviews([]);
     }
-  };
-
-  // Generate sample interviews
-  const generateSampleInterviews = (user) => {
-    const positions = ['Frontend Developer','Backend Developer','Full Stack Developer','Product Manager','Data Scientist','Software Engineer'];
-    const types = ['Technical', 'Behavioral', 'Mixed'];
-    const statuses = ['Completed', 'In Progress', 'Scheduled'];
-
-    const numInterviews = Math.floor(Math.random() * 6) + 3;
-    const interviews = [];
-
-    for (let i = 0; i < numInterviews; i++) {
-      const position = positions[Math.floor(Math.random() * positions.length)];
-      const type = types[Math.floor(Math.random() * types.length)];
-      const status = i < numInterviews - 2 ? 'Completed' : statuses[Math.floor(Math.random() * statuses.length)];
-
-      const date = new Date();
-      date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-
-      const baseScore = Math.random() > 0.3 ? 70 + Math.random() * 30 : 40 + Math.random() * 30;
-      const score = status === 'Completed' ? Math.round(baseScore) : null;
-
-      interviews.push({
-        id: i + 1,
-        position,
-        type,
-        date: date.toISOString().split('T')[0],
-        duration: [30, 45, 60][Math.floor(Math.random() * 3)],
-        score,
-        status
-      });
-    }
-    return interviews.sort((a, b) => new Date(b.date) - new Date(a.date));
   };
 
   const handleLogout = async () => {
@@ -78,11 +51,33 @@ export default function Dashboard() {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      // Redirect to home page after successful logout
+      navigate('/');
     } catch (error) {
       console.error('Logout error:', error.message);
       setError('Failed to logout');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const viewInterviewDetails = (interview) => {
+    if (interview.report && interview.responses) {
+      // This is a real completed interview with full data
+      navigate('/results', {
+        state: {
+          report: interview.report,
+          responses: interview.responses,
+          interviewData: {
+            position: interview.position,
+            interviewType: interview.type,
+            duration: interview.duration
+          }
+        }
+      });
+    } else {
+      // Fallback for any interviews without full data
+      alert(`Interview Details:\nPosition: ${interview.position}\nType: ${interview.type}\nScore: ${interview.score}%\nDate: ${interview.date}\n\nDetailed results not available for this interview.`);
     }
   };
 
@@ -125,8 +120,14 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    navigate('/auth');
-    return null;
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Redirecting...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -135,7 +136,9 @@ export default function Dashboard() {
       <div className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <h1 className="text-2xl font-bold text-white">GetHired Dashboard</h1>
+            <h1 className="text-5xl md:text-3xl font-extrabold leading-snug tracking-tight text-white">
+              <span className="text-indigo-400">Get Hired</span>
+            </h1>
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-gray-300">
                 <User className="w-5 h-5 mr-2" />
@@ -218,10 +221,19 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-4">
                 {previousInterviews.map((interview) => (
-                  <div key={interview.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors">
+                  <div 
+                    key={interview.id} 
+                    className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
+                    onClick={() => viewInterviewDetails(interview)}
+                  >
                     <div>
                       <h4 className="font-semibold text-white">{interview.position}</h4>
-                      <p className="text-gray-400 text-sm">{interview.type} • {interview.duration} min • {new Date(interview.date).toLocaleDateString()}</p>
+                      <p className="text-gray-400 text-sm">
+                        {interview.type} • {interview.duration} min • {new Date(interview.date).toLocaleDateString()}
+                        {interview.totalQuestions && (
+                          <span> • {interview.totalQuestions} questions</span>
+                        )}
+                      </p>
                     </div>
                     <div className="flex items-center space-x-3">
                       {interview.score !== null && (
@@ -231,12 +243,9 @@ export default function Dashboard() {
                           </span>
                         </div>
                       )}
-                      <button
-                        onClick={() => navigate('/setup')}
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
+                      <div className="text-gray-400 hover:text-white transition-colors">
                         <ChevronRight className="w-5 h-5" />
-                      </button>
+                      </div>
                     </div>
                   </div>
                 ))}

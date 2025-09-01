@@ -29,10 +29,10 @@ function App() {
                 </div>
                 <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-black/20 pointer-events-none" />
               </div>
-              <div className="w-full bg-gray-950">
+              <div id="about" className="w-full bg-gray-950">
                 <Section />
               </div>
-              <div className="w-full bg-gray-950">
+              <div id="community" className="w-full bg-gray-950">
                 <Example />
               </div>
               <div className="w-full bg-gray-950">

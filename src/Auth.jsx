@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { ArrowRight, Eye, EyeOff, Github, Lock, Mail, User } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,23 +23,8 @@ export default function AuthPage() {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Check for auth state changes (handles OAuth redirects)
+  // Check if user is already authenticated
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          console.log('User signed in:', session.user);
-          setSuccessMessage('Successfully signed in! Redirecting to dashboard...');
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 1500);
-        } else if (event === 'SIGNED_OUT') {
-          console.log('User signed out');
-        }
-      }
-    );
-
-    // Check if user is already authenticated
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -48,8 +33,6 @@ export default function AuthPage() {
     };
     
     checkUser();
-
-    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const handleInputChange = (e) => {
@@ -187,16 +170,19 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4 py-12 relative">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-6 left-6 flex items-center space-x-2 text-gray-400 hover:text-white transition-colors z-10"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span>Back to Home</span>
+      </button>
+
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mb-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-              GetHired
-            </h1>
-            <p className="text-sm text-gray-400 mt-1">AI-Powered Mock Interviews</p>
-          </div>
           <h2 className="text-3xl font-bold text-white mb-2">
             {isLogin ? 'Welcome back' : 'Create your account'}
           </h2>
@@ -262,14 +248,7 @@ export default function AuthPage() {
               <span>Continue with Google</span>
             </button>
             
-            <button
-              onClick={() => handleOAuthSignIn('github')}
-              disabled={loading}
-              className="flex items-center justify-center px-4 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-all duration-200 space-x-3 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-700 shadow-sm"
-            >
-              <Github className="w-5 h-5" />
-              <span>Continue with GitHub</span>
-            </button>
+    
           </div>
 
           {/* Divider */}

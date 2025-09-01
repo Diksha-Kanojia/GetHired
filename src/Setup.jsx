@@ -229,7 +229,7 @@ export default function Setup() {
       const interviewData = {
         ...formData,
         startTime: new Date().toISOString(),
-        totalQuestions: Math.floor(formData.duration / 5), // Rough estimate
+        // Remove totalQuestions calculation - let InterviewQuestion component handle it
       };
 
       // Navigate to interview screen
