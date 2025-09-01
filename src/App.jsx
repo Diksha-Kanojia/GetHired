@@ -9,7 +9,7 @@ import InterviewScreen from './Interview'; // Import the InterviewScreen compone
 import { MediaProvider } from './MediaContext'; // Import the MediaProvider
 import Results from './Results'; // Import the Results component
 import Section from './Section';
-import Setup from './setup';
+import Setup from './Setup';
 import Threads from './Threads';
 
 function App() {
