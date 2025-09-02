@@ -1,15 +1,15 @@
 const HeroSection = () => {
   return (
-    <div className="min-h-screen relative flex flex-col">
+    <>
       {/* Header with Logo */}
-      <div className="absolute top-0 left-0 w-full z-30 p-4 md:p-6 lg:p-8">
+      <div className="absolute top-0 left-0 w-full z-30 p-10 md:p-6 lg:p-8">
         <div className="flex justify-start">
           <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white lg:-ml-4 xl:-ml-6">
             Get <span className="text-indigo-400">Hired</span>
           </h1>
         </div>
       </div>
-
+    <div className="min-h-screen relative flex flex-col">
       {/* Hero Content */}
       <div className="flex-1 flex flex-col items-center justify-center text-center text-white relative z-20 px-6 pt-16 md:pt-20 lg:pt-24">
         {/* Heading */}
@@ -36,6 +36,7 @@ const HeroSection = () => {
     </div>
       </div>
     </div>
+    </>
   );
 };
 
