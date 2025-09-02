@@ -34,7 +34,7 @@ handling
 - **Speech Synthesis**: Web Speech API for text-to-speech functionality
 
 
-```
+
 
 ##  Features
 
